@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import mapped_column, relationship
 from db import db 
 
@@ -16,4 +16,5 @@ class Task(db.Model):
     name = mapped_column(String)
     
     # -------- Relationship ------------
+    
     users = relationship("User", back_populates="tasks")
