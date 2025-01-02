@@ -9,5 +9,9 @@ db.init_app(app)
 
 app.instance_path = Path("data").resolve
 
+@app.route('/')
+def home():
+    return "Hi"
+
 if __name__ == "__main__":
 	app.run(debug=True, port=3000)
