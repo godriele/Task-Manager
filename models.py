@@ -1,6 +1,6 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
-from flask_login import UserMixin
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
 from db import db 
 
 class User(db.Model, UserMixin):
@@ -10,12 +10,13 @@ class User(db.Model, UserMixin):
     password = mapped_column(String(80), nullable=False)
     
     # -------- Relationship ------------
-    task = relationship("Task", back_populates="users")
-    
+    tasks = relationship("Task", back_populates="user") 
+
 class Task(db.Model):
     __tablename__ = 'tasks'
     id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(String)
+    name = mapped_column(String, nullable=False)
+    user_id = mapped_column(Integer, ForeignKey('user.id'))  
     
     # -------- Relationship ------------
-    users = relationship("User", back_populates="tasks")
+    user = relationship("User", back_populates="tasks")  
