@@ -2,6 +2,7 @@ from sqlalchemy import Integer, String, ForeignKey, Text, Enum
 from sqlalchemy.orm import mapped_column, relationship
 from flask_login import UserMixin
 from db import db
+from sqlalchemy import Enum as SQLAlchemyEnum
 from enum import Enum as PyEnum
 
 
@@ -14,17 +15,21 @@ class User(db.Model, UserMixin):
     # -------- Relationship ------------
     tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan") 
 
+
 class TaskStatus(PyEnum):
-    PENDING = "Pending"
-    IN_PROGRESS = "In Progress"
-    COMPLETED = "Completed"
+    PENDING = "PENDING"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+
 
 class Task(db.Model):
     __tablename__ = 'tasks'
     id = mapped_column(Integer, primary_key=True)
     title = mapped_column(String(100), nullable=False)  
     description = mapped_column(Text, nullable=False)
-    status = mapped_column(String, nullable=False)
+    
+    # Use Enum to map the status field
+    status = mapped_column(SQLAlchemyEnum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
     
     user_id = mapped_column(Integer, ForeignKey('user.id'), nullable=False)  
     category_id = mapped_column(Integer, ForeignKey("category.id"), nullable=True)  

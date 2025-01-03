@@ -59,10 +59,19 @@ def login():
     return render_template('login.html', form=form)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
-@login_required  
+@login_required
 def dashboard():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    return render_template("dashboard.html", tasks=tasks)
+
+    # Group tasks by status (use enum comparison)
+    grouped_tasks = {
+        TaskStatus.PENDING: [task for task in tasks if task.status == TaskStatus.PENDING],
+        TaskStatus.IN_PROGRESS: [task for task in tasks if task.status == TaskStatus.IN_PROGRESS],
+        TaskStatus.COMPLETED: [task for task in tasks if task.status == TaskStatus.COMPLETED],
+    }
+
+    return render_template("dashboard.html", grouped_tasks=grouped_tasks)
+
 
 @app.route('/logout')
 @login_required  
@@ -85,16 +94,14 @@ def register():
 # ------------------------ Managing Tasks ------------------------------
 #Todo: Add Task 
 @app.route('/add', methods=["POST"])
-@login_required 
+@login_required
 def add():
-    print(f"Current User ID:, {current_user}")
     title = request.form['title']
-    description = request.form['description']
-    status = request.form.get('status', TaskStatus.PENDING.name)  
+    description = request.form['description'] 
+    status = request.form.get('status', TaskStatus.PENDING.name)  # Use TaskStatus.PENDING.name
+    task_status = TaskStatus[status]  # Access the Enum using the name
     
-    task_status = TaskStatus[status.upper()]  
-    
-    new_task = Task(title=title, description=description, user_id=current_user.id, status=task_status.value)
+    new_task = Task(title=title, description=description, user_id=current_user.id, status=task_status)
     db.session.add(new_task)
     db.session.commit()
     
@@ -112,7 +119,14 @@ def update_task_status(task_id, status):
     return redirect(url_for('dashboard'))
 
 #Todo: Delete Task 
-
+@app.route('/delete/<int:task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id == current_user.id:
+        db.session.delete(task)
+        db.session.commit()
+    return redirect(url_for('dashboard'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
