@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
-from models import User,Task 
+from models import User, Task, TaskStatus
 from db import db
 from pathlib import Path
 # ---------------- Authentications ----------------------------
@@ -81,6 +81,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
 # ------------------------ Managing Tasks ------------------------------
 #Todo: Add Task 
 @app.route('/add', methods=["POST"])
@@ -88,18 +89,28 @@ def register():
 def add():
     print(f"Current User ID:, {current_user}")
     title = request.form['title']
-    description = request.form['description'] 
+    description = request.form['description']
+    status = request.form.get('status', TaskStatus.PENDING.name)  
     
-    if not title or not description:
-        return "Title and Descripton are required", 400
+    task_status = TaskStatus[status.upper()]  
     
-    new_task = Task(title=title, description=description, user_id=current_user.id)
+    new_task = Task(title=title, description=description, user_id=current_user.id, status=task_status.value)
     db.session.add(new_task)
     db.session.commit()
     
     return redirect(url_for('dashboard'))
 
+
 #Todo: Update Task 
+@app.route('/int<task_id>/<status>', methods=['GET'])
+@login_required 
+def update_task_status(task_id, status):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id == current_user.id:
+        task.status = TaskStatus[status.upper()]  
+        db.session.commit()
+    return redirect(url_for('dashboard'))
+
 #Todo: Delete Task 
 
 
