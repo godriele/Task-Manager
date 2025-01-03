@@ -1,5 +1,5 @@
-from flask import Flask, render_template, redirect, url_for
-from models import User
+from flask import Flask, render_template, redirect, url_for, request
+from models import User,Task 
 from db import db
 from pathlib import Path
 # ---------------- Authentications ----------------------------
@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
-from flask_login import login_user, LoginManager, login_required, logout_user
+from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 
 # ------------------------------------------------------------
 app = Flask(__name__)
@@ -42,11 +42,12 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField("Login")
 
-# ------------------------------------------------------------- 
+# ----------------------------------------------------------------
 @app.route('/')
 def home():
     return render_template('home.html')
 
+# -------------------- Authentication ----------------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -60,7 +61,8 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required  
 def dashboard():
-    return render_template("dashboard.html")
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template("dashboard.html", tasks=tasks)
 
 @app.route('/logout')
 @login_required  
@@ -78,6 +80,28 @@ def register():
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
+# ------------------------ Managing Tasks ------------------------------
+#Todo: Add Task 
+@app.route('/add', methods=["POST"])
+@login_required 
+def add():
+    print(f"Current User ID:, {current_user}")
+    title = request.form['title']
+    description = request.form['description'] 
+    
+    if not title or not description:
+        return "Title and Descripton are required", 400
+    
+    new_task = Task(title=title, description=description, user_id=current_user.id)
+    db.session.add(new_task)
+    db.session.commit()
+    
+    return redirect(url_for('dashboard'))
+
+#Todo: Update Task 
+#Todo: Delete Task 
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
