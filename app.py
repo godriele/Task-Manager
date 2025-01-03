@@ -53,20 +53,20 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user)  # Logs in the user and sets session
-            return redirect(url_for('dashboard'))  # Redirects to the dashboard
+            login_user(user)  
+            return redirect(url_for('dashboard'))  
     return render_template('login.html', form=form)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
-@login_required  # This ensures that only logged-in users can access this route
+@login_required  
 def dashboard():
     return render_template("dashboard.html")
 
 @app.route('/logout')
-@login_required  # This ensures that the user must be logged in to logout
+@login_required  
 def logout():
-    logout_user()  # Logs out the user and removes session data
-    return redirect(url_for('home'))  # Redirects to the home page
+    logout_user()  
+    return redirect(url_for('home'))  
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -76,7 +76,7 @@ def register():
         new_user = User(username=form.username.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))  # Redirect to login page after successful registration
+        return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
 if __name__ == "__main__":
