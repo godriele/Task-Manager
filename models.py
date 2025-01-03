@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     password = mapped_column(String(80), nullable=False)
     
     # -------- Relationship ------------
-    tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan") 
+    tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan")
 
 
 class TaskStatus(PyEnum):
@@ -37,6 +37,7 @@ class Task(db.Model):
     # -------- Relationship ------------
     user = relationship("User", back_populates="tasks")  
     category = relationship("Category", back_populates="tasks")
+
 
 class Category(db.Model):
     __tablename__ = 'category'

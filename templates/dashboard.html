@@ -8,19 +8,43 @@
     <a href="{{ url_for('logout') }}">Logout</a>
     <h2>Your Tasks</h2>
 
-    <!-- Loop through tasks and display each task's details -->
+    {% for status, tasks in grouped_tasks.items() %}
+    <h3>{{ status.name }}</h3>
+    <!-- Display the status name -->
     <ul>
       {% for task in tasks %}
       <li>
-        <strong>{{ task.title }}</strong>: {{ task.description }}<br />
-        <em>Status: {{ task.status.name }}</em>
-        <!-- This will display the name of the status -->
+        <strong>{{ task.title }}</strong><br />
+        <em>{{ task.description }}</em><br />
+
+        <!-- Update Task Status -->
+        <form
+          action="{{ url_for('update_task_status', task_id=task.id, status='IN_PROGRESS') }}"
+          method="POST"
+        >
+          <button type="submit">Mark as In Progress</button>
+        </form>
+
+        <form
+          action="{{ url_for('update_task_status', task_id=task.id, status='COMPLETED') }}"
+          method="POST"
+        >
+          <button type="submit">Mark as Completed</button>
+        </form>
+
+        <!-- Delete Task -->
+        <form
+          action="{{ url_for('delete_task', task_id=task.id) }}"
+          method="POST"
+        >
+          <button type="submit">Delete Task</button>
+        </form>
       </li>
       {% endfor %}
     </ul>
+    {% endfor %}
 
-    <!-- Add new task form -->
-    <h3>Add Task</h3>
+    <!-- Add Task Form -->
     <form action="{{ url_for('add') }}" method="POST">
       <input type="text" name="title" placeholder="Task Title" required />
       <textarea
@@ -28,6 +52,14 @@
         placeholder="Task Description"
         required
       ></textarea>
+
+      <!-- Status Select -->
+      <select name="status">
+        <option value="PENDING">Pending</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="COMPLETED">Completed</option>
+      </select>
+
       <button type="submit">Add Task</button>
     </form>
   </body>

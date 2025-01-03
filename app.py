@@ -72,7 +72,6 @@ def dashboard():
 
     return render_template("dashboard.html", grouped_tasks=grouped_tasks)
 
-
 @app.route('/logout')
 @login_required  
 def logout():
@@ -99,7 +98,7 @@ def add():
     title = request.form['title']
     description = request.form['description'] 
     status = request.form.get('status', TaskStatus.PENDING.name)  # Use TaskStatus.PENDING.name
-    task_status = TaskStatus[status]  # Access the Enum using the name
+    task_status = TaskStatus[status.upper()]  # Access the Enum using the name
     
     new_task = Task(title=title, description=description, user_id=current_user.id, status=task_status)
     db.session.add(new_task)
@@ -108,7 +107,7 @@ def add():
     return redirect(url_for('dashboard'))
 
 
-#Todo: Update Task 
+#Todo: Update Task Status
 @app.route('/int<task_id>/<status>', methods=['GET'])
 @login_required 
 def update_task_status(task_id, status):
@@ -127,6 +126,7 @@ def delete_task(task_id):
         db.session.delete(task)
         db.session.commit()
     return redirect(url_for('dashboard'))
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
