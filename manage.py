@@ -8,8 +8,8 @@ def drop_all():
         # Will drop all tables
         db.drop_all()
     print("Dropped Table")
-    
 
+# aWDw
 #Create all tables in the database
 def create_all():
     with app.app_context(): 
