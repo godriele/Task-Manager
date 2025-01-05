@@ -45,6 +45,10 @@
         padding: 10px;
         border: 1px solid #ccc;
         background-color: #e6f7ff;
+        cursor: pointer;
+      }
+      .task-options {
+        display: none;
       }
       input,
       textarea,
@@ -56,6 +60,19 @@
         max-width: 300px;
       }
     </style>
+    <script>
+      function toggleOptions(taskId) {
+        var optionsDiv = document.getElementById("options-" + taskId);
+        if (
+          optionsDiv.style.display === "none" ||
+          optionsDiv.style.display === ""
+        ) {
+          optionsDiv.style.display = "block";
+        } else {
+          optionsDiv.style.display = "none";
+        }
+      }
+    </script>
   </head>
   <body>
     <h1>Welcome, {{ current_user.username }}</h1>
@@ -66,27 +83,29 @@
     <h3>{{ status.name }}</h3>
     <ul>
       {% for task in tasks %}
-      <li>
+      <li onclick="toggleOptions({{ task.id }})">
         <strong>{{ task.title }}</strong><br />
         <em>{{ task.description }}</em><br />
-        <form
-          action="{{ url_for('update_task_status', task_id=task.id, status='IN_PROGRESS') }}"
-          method="POST"
-        >
-          <button type="submit">Mark as In Progress</button>
-        </form>
-        <form
-          action="{{ url_for('update_task_status', task_id=task.id, status='COMPLETED') }}"
-          method="POST"
-        >
-          <button type="submit">Mark as Completed</button>
-        </form>
-        <form
-          action="{{ url_for('delete_task', task_id=task.id) }}"
-          method="POST"
-        >
-          <button type="submit">Delete Task</button>
-        </form>
+        <div id="options-{{ task.id }}" class="task-options">
+          <form
+            action="{{ url_for('update_task_status', task_id=task.id, status='IN_PROGRESS') }}"
+            method="POST"
+          >
+            <button type="submit">Mark as In Progress</button>
+          </form>
+          <form
+            action="{{ url_for('update_task_status', task_id=task.id, status='COMPLETED') }}"
+            method="POST"
+          >
+            <button type="submit">Mark as Completed</button>
+          </form>
+          <form
+            action="{{ url_for('delete_task', task_id=task.id) }}"
+            method="POST"
+          >
+            <button type="submit">Delete Task</button>
+          </form>
+        </div>
       </li>
       {% endfor %}
     </ul>

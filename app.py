@@ -108,7 +108,7 @@ def add():
 
 
 #Todo: Update Task Status
-@app.route('/<int:task_id>/<status>', methods=['GET'])
+@app.route('/<int:task_id>/<status>', methods=['POST'])
 @login_required 
 def update_task_status(task_id, status):
     task = Task.query.get_or_404(task_id)
@@ -116,6 +116,7 @@ def update_task_status(task_id, status):
         task.status = TaskStatus[status.upper()]  
         db.session.commit()
     return redirect(url_for('dashboard'))
+
 
 #Todo: Delete Task 
 @app.route('/delete/<int:task_id>', methods=['POST'])
