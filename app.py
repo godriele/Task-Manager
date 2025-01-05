@@ -108,7 +108,7 @@ def add():
 
 
 #Todo: Update Task Status
-@app.route('/int<task_id>/<status>', methods=['GET'])
+@app.route('/<int:task_id>/<status>', methods=['GET'])
 @login_required 
 def update_task_status(task_id, status):
     task = Task.query.get_or_404(task_id)
