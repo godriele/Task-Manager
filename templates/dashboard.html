@@ -2,6 +2,60 @@
 <html lang="en">
   <head>
     <title>Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f8ff;
+        margin: 0;
+        padding: 20px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #333;
+      }
+      a {
+        display: inline-block;
+        margin-top: 10px;
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      form {
+        margin: 10px 0;
+      }
+      button {
+        padding: 5px 10px;
+        background-color: #0066cc;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #004999;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #e6f7ff;
+      }
+      input,
+      textarea,
+      select {
+        display: block;
+        margin: 10px 0;
+        padding: 8px;
+        width: 100%;
+        max-width: 300px;
+      }
+    </style>
   </head>
   <body>
     <h1>Welcome, {{ current_user.username }}</h1>
@@ -10,29 +64,23 @@
 
     {% for status, tasks in grouped_tasks.items() %}
     <h3>{{ status.name }}</h3>
-    <!-- Display the status name -->
     <ul>
       {% for task in tasks %}
       <li>
         <strong>{{ task.title }}</strong><br />
         <em>{{ task.description }}</em><br />
-
-        <!-- Update Task Status -->
         <form
           action="{{ url_for('update_task_status', task_id=task.id, status='IN_PROGRESS') }}"
           method="POST"
         >
           <button type="submit">Mark as In Progress</button>
         </form>
-
         <form
           action="{{ url_for('update_task_status', task_id=task.id, status='COMPLETED') }}"
           method="POST"
         >
           <button type="submit">Mark as Completed</button>
         </form>
-
-        <!-- Delete Task -->
         <form
           action="{{ url_for('delete_task', task_id=task.id) }}"
           method="POST"
@@ -44,7 +92,6 @@
     </ul>
     {% endfor %}
 
-    <!-- Add Task Form -->
     <form action="{{ url_for('add') }}" method="POST">
       <input type="text" name="title" placeholder="Task Title" required />
       <textarea
@@ -52,14 +99,11 @@
         placeholder="Task Description"
         required
       ></textarea>
-
-      <!-- Status Select -->
       <select name="status">
         <option value="PENDING">Pending</option>
         <option value="IN_PROGRESS">In Progress</option>
         <option value="COMPLETED">Completed</option>
       </select>
-
       <button type="submit">Add Task</button>
     </form>
   </body>
