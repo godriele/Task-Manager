@@ -83,7 +83,7 @@
     <h3>{{ status.name }}</h3>
     <ul>
       {% for task in tasks %}
-      <li onclick="toggleOptions({{ task.id }})">
+      <li onclick="toggleOptions('{{ task.id }}')">
         <strong>{{ task.title }}</strong><br />
         <em>{{ task.description }}</em><br />
         <div id="options-{{ task.id }}" class="task-options">
